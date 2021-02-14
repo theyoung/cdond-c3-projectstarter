@@ -1,5 +1,4 @@
 ---
-
 - name: "configuration play." 
   hosts: web
   user: ubuntu
@@ -11,10 +10,28 @@
 
   pre_tasks:
     - name: "wait 600 seconds for target connection to become reachable/usable."
-      # Your code here
+      wait_for_connection:
+        timeout: 600
 
     - name: "install python for Ansible."
-      # Your code here
+      become: true
+      sell: |
+        if [ ! -f /usr/bin/python ]; then
+            apt -y update && apt -y install python3; 
+        fi
+
+  environment:
+      TYPEORM_CONNECTION: "{{ lookup('env','TYPEORM_CONNECTION') }}"
+      TYPEORM_PORT: "{{ lookup('env','TYPEORM_PORT') }}"
+      TYPEORM_HOST: "{{ lookup('env','TYPEORM_HOST') }}"
+      TYPEORM_USERNAME: "{{ lookup('env','TYPEORM_USERNAME') }}"
+      TYPEORM_PASSWORD: "{{ lookup('env','TYPEORM_PASSWORD') }}"
+      TYPEORM_DATABASE: "{{ lookup('env','TYPEORM_DATABASE') }}"
+      TYPEORM_MIGRATIONS: "{{ lookup('env','TYPEORM_MIGRATIONS') }}"
+      TYPEORM_ENTITIES: "{{ lookup('env','TYPEORM_ENTITIES') }}"
+
+
 
   roles:
-    # Your code here
+    - configure-server #PM2, nodejs install
+

@@ -171,52 +171,63 @@ jobs:
       - image: amazon/aws-cli
     steps:
       # Checkout code from git
+      - checkout
       - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              #--tags project=your-tag \
-              # --stack-name "your back-end stack name with workflow id" \
-              # --parameter-overrides ID="your workflow id"  
-              exit 1
+              --tags project=udapeople \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              #--tags project=your-tag \
-              # --stack-name "your front-end stack name with workflow id" \
-              # --parameter-overrides ID="your workflow id"  
-              exit 1
+              --tags project=udapeople\
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            # Your code here
-            exit 1
+            aws ec2 describe-instances --filters Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
+
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
+    environment:
+      TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+      TYPEORM_PORT: $TYPEORM_PORT
+      TYPEORM_HOST: $TYPEORM_HOST
+      TYPEORM_USERNAME: $TYPEORM_USERNAME
+      TYPEORM_PASSWORD: $TYPEORM_PASSWORD
+      TYPEORM_DATABASE: $TYPEORM_DATABASE
+      TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
+      TYPEORM_ENTITIES: $TYPEORM_ENTITIES
     steps:
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
+      - checkout
+      - add_ssh_keys:
+          fingerprints: [7c:fd:fa:f2:4a:db:a4:c8:69:dc:bf:51:10:4c:c6:14]
+      - attach_workspace:
+          at: ~/
       - run:
           name: Install dependencies
-          command: |
-            # Your code here
-            exit 1
+          command: apk add --update ansible
       - run:
           name: Configure server
           command: |
-            # Your code here
-            exit 1
+            ansible-playbook -i inventory.txt ./.circleci/ansible/configure-server.yml
       # Here's where you will add some code to rollback on failure      
 
   run-migrations:
