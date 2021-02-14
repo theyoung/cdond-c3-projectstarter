@@ -100,4 +100,4 @@ docker를 이용한 자체 postgresql을 생성하기 위한 파일
 ### License
 
 [License](LICENSE.md)
-Forked From [Udacity-Git-Hub]( https://github.com/udacity/cdond-c3-projectstarter
+Forked From [Udacity-Git-Hub](https://github.com/udacity/cdond-c3-projectstarter)
