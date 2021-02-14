@@ -48,6 +48,7 @@ jobs:
             cd ./frontend
             npm i
             npm run build
+            return 1
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build-2
