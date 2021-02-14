@@ -48,7 +48,7 @@ jobs:
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build-1
+          key: frontend-build-2
 
   build-backend:
     docker:
@@ -65,7 +65,7 @@ jobs:
               npm run build
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-build-1
+          key: backend-build-2
 
   test-frontend:
     docker:
@@ -74,7 +74,7 @@ jobs:
       - checkout
       - restore_cache:
           keys: 
-           - frontend-build-1
+           - frontend-build-2
       - run:
           name: test frontend
           command: |
@@ -91,7 +91,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - backend-build-1
+            - backend-build-2
       - run:
           name: test backend
           command: |
@@ -109,12 +109,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - frontend-build-1
+            - frontend-build-2
       - run:
           name: audit frontend
           command: |
             cd frontend/
-            npm audit --audit-level=critical --force
+            npm audit
+            npm audit fix
+            npm audit --audit-level=critical
       # Checkout code from git
       # Restore from cache
       # Your job code here
@@ -126,12 +128,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - backend-build-1
+            - backend-build-2
       - run:
           name: audit backend
           command: |
             cd backend/
-            npm audit --audit-level=critical --force
+            npm audit
+            npm audit fix
+            npm audit --audit-level=critical
 
   deploy-infrastructure:
     docker:
