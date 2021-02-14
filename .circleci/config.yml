@@ -44,6 +44,7 @@ jobs:
           name: Build front-end
           command: |
             cd ./frontend
+            npm i
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
@@ -60,6 +61,7 @@ jobs:
           name: Back-end build
           command: |
               cd ./backend
+              npm i
               npm run build
       - save_cache:
           paths: [backend/node_modules]
@@ -67,39 +69,43 @@ jobs:
 
   test-frontend:
     docker:
-      # Docker image here
+      - image: alpine:latest
     steps:
+      - checkout
       # Checkout code from git
       # Restore from cache
       # Your job code here
                 
   test-backend:
     docker:
-      # Docker image here
+      - image: alpine:latest
     steps:
+      - checkout
       # Checkout code from git
       # Restore from cache
       # Your job code here
             
   scan-frontend:
     docker:
-      # Docker image here
+      - image: amazon/aws-cli
     steps:
+      - checkout
       # Checkout code from git
       # Restore from cache
       # Your job code here
 
   scan-backend:
     docker:
-      # Docker image here
+      - image: amazon/aws-cli
     steps:
+      - checkout
       # Checkout code from git
       # Restore from cache
       # Your job code here
 
   deploy-infrastructure:
     docker:
-      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
     steps:
       # Checkout code from git
       - run:
@@ -133,7 +139,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
     steps:
       # Checkout code from git
       # Add ssh keys with fingerprint
@@ -152,7 +158,7 @@ jobs:
 
   run-migrations:
     docker:
-      # Docker image here that supports NodeJS
+      - image: circleci/node:13.8.0
     steps:
       # Checkout code from git
       - run:
@@ -169,7 +175,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
     steps:
       # Checkout code from git
       - run:
@@ -190,7 +196,7 @@ jobs:
                     
   deploy-backend:
     docker:
-      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
     steps:
       # Checkout code from git
       # Add ssh keys with fingerprint
@@ -207,7 +213,7 @@ jobs:
 
   smoke-test:
     docker:
-      # Lightweight Docker image 
+      - image: alpine:latest
     steps:
       # Checkout code from git
       - run:
@@ -230,7 +236,7 @@ jobs:
 
   cloudfront-update:
     docker:
-      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
     steps:
       # Checkout code from git
       - run:
@@ -243,24 +249,24 @@ jobs:
             # your code here
       # Here's where you will add some code to rollback on failure  
 
-cleanup:
-    docker:
-      # Docker image here
-    steps:
-      # Checkout code from git
-      - run:
-          name: Get old stack workflow id
-          command: |
-            # your code here
-            export OldWorkflowID="the id here"
-            export STACKS=[] #put the list of stacks here
-      - run:
-          name: Remove old stacks and files
-          command: |
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-            then
+  cleanup:
+      docker:
+        - image: alpine:latest
+      steps:
+        - checkout
+        - run:
+            name: Get old stack workflow id
+            command: |
               # your code here
-            fi
+              export OldWorkflowID="the id here"
+              export STACKS=[] #put the list of stacks here
+        - run:
+            name: Remove old stacks and files
+            command: |
+              if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+              then
+                # your code here
+              fi
             
 
 workflows:
