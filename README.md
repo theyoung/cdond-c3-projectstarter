@@ -54,6 +54,50 @@ Before you submit your project, please check your work against the project rubri
 - [Ansible](https://www.ansible.com/) - Configuration management tool
 - [Prometheus](https://prometheus.io/) - Monitoring tool
 
+
+
+### 개발에 참조 할 것 ###
+
+##### Cloud Formation Templates
+
+```diff
+root
+  |-/.circleci
+    |-/files
+    	|- backend.yml
+    	|- cloudfront.yml
+    	|- frontend.yml
+```
+
+
+
+##### CircleCI config
+
+```diff
+root
+  |-/.circleci
+    |- config.yml
+```
+
+ `config.yml` 에 `# your code here` 라고 작성 되어있는 부분을 완성 시키면 됨
+
+
+
+##### Postgresql
+
+```diff
+root
+  |-/util
+    |- docker-compose.yml
+```
+
+docker를 이용한 자체 postgresql을 생성하기 위한 파일
+
+
+
+
+
 ### License
 
 [License](LICENSE.md)
+Forked From [Udacity-Git-Hub]( https://github.com/udacity/cdond-c3-projectstarter
