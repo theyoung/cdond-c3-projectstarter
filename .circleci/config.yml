@@ -69,18 +69,35 @@ jobs:
 
   test-frontend:
     docker:
-      - image: alpine:latest
+      - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: 
+           - frontend-build
+      - run:
+          name: test frontend
+          command: |
+            cd frontend/
+            npm run test
       # Checkout code from git
       # Restore from cache
       # Your job code here
                 
   test-backend:
     docker:
-      - image: alpine:latest
+      - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - backend-build
+      - run:
+          name: test backend
+          command: |
+            cd backend/
+            npm run test
+
       # Checkout code from git
       # Restore from cache
       # Your job code here
