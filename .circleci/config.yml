@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  slack: circleci/slack@4.2.1
 
 commands:
   destroy-environment:
@@ -49,6 +51,14 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build-2
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+
 
   build-backend:
     docker:
@@ -66,6 +76,14 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build-2
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+
 
   test-frontend:
     docker:
@@ -118,6 +136,13 @@ jobs:
       # Checkout code from git
       # Restore from cache
       # Your job code here
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
   scan-backend:
     docker:
@@ -132,6 +157,14 @@ jobs:
           command: |
             cd backend/
             npm audit fix
+      - slack/notify:
+          event: fail
+          mentions: '@EngineeringTeam'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+
 
   deploy-infrastructure:
     docker:
