@@ -10,9 +10,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID}
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID}
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -194,7 +194,7 @@ jobs:
             cat .circleci/ansible/inventory.txt
             yum -y install tar gzip jq npm
       - persist_to_workspace:
-          root: ~/
+          root: ansible
           paths:
             - .circleci/ansible/inventory.txt
       - destroy-environment
@@ -220,32 +220,41 @@ jobs:
       - add_ssh_keys:
           fingerprints: [7c:fd:fa:f2:4a:db:a4:c8:69:dc:bf:51:10:4c:c6:14]
       - attach_workspace:
-          at: ~/
+          at: /temp/ansible
       - run:
           name: Install dependencies
           command: apk add --update ansible
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i inventory.txt ./.circleci/ansible/configure-server.yml
-      # Here's where you will add some code to rollback on failure      
+            ansible-playbook -i /tmp/ansible/inventory.txt ./.circleci/ansible/configure-server.yml
+      - destroy-environment     
 
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
     steps:
       # Checkout code from git
+      - checkout
       - run:
           name: Run migrations
           command: |
-            # Your code here
-            exit 1
+            cd backend/
+            npm run migrations >> result.text
+            if grep -F "abc" result.text; then 
+              return 0
+            else 
+              return 1 
+            fi
       - run:
           name: Send migration results to memstash
           command: |
-            # Your code here
-            exit 1
-     # Here's where you will add some code to rollback on failure      
+            curl -H "Content-Type: text/plain" \
+               -H "token: $MEMSTASH_TOKEN" \
+               --request PUT \
+               --data ${MIGRATION_RESULT} \
+               https://api.memstash.io/values/migration_result
+      - destroy-environment
 
   deploy-frontend:
     docker:
