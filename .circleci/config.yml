@@ -15,22 +15,19 @@ commands:
             aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
 
   revert-migrations:
-    description: Revert the last migration if successfully run in the current workflow.
-    parameters:
-      # Add parameter here     
+    description: Revert the last migration if successfully run in the current workflow. 
     steps:
       - run:
           name: Revert migrations
-          # Add when this will run
+          when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
-            if(( $SUCCESS==1 )); 
-            then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+            MI_RESULT=$(curl -H "token: 64a7f330-a253-4a76-b6f2-260a098862fb" --request GET https://api.memstash.io/values/workflowid)
+            if [ ! -z $MI_RESULT ]; then 
+              echo 'Migration Success Then Revert start workflow = ' $MI_RESULT;
+              cd backend/
+              npm i
+              npm run migrations:revert
             fi
             
 jobs:
@@ -242,7 +239,7 @@ jobs:
           command: |
             cd backend/
             npm run migrations >> result.text
-            if grep -F "abc" result.text; then 
+            if grep -F "successfully" result.text; then 
               return 0
             else 
               return 1 
@@ -251,11 +248,21 @@ jobs:
           name: Send migration results to memstash
           command: |
             curl -H "Content-Type: text/plain" \
-               -H "token: $MEMSTASH_TOKEN" \
+               -H "token: 64a7f330-a253-4a76-b6f2-260a098862fb" \
                --request PUT \
-               --data ${MIGRATION_RESULT} \
-               https://api.memstash.io/values/migration_result
+               --data migration_${CIRCLE_WORKFLOW_ID} \
+               https://api.memstash.io/values/workflowid
+      - run:
+          name: Send clear results to memstash
+          when: on_fail
+          command: |
+            curl -H "Content-Type: text/plain" \
+               -H "token: 64a7f330-a253-4a76-b6f2-260a098862fb" \
+               --request PUT \
+               --data "" \
+               https://api.memstash.io/values/workflowid
       - destroy-environment
+      - revert-migrations
 
   deploy-frontend:
     docker:
