@@ -194,7 +194,7 @@ jobs:
             cat .circleci/ansible/inventory.txt
             yum -y install tar gzip jq npm
       - persist_to_workspace:
-          root: ansible
+          root: .
           paths:
             - .circleci/ansible/inventory.txt
       - destroy-environment
@@ -220,14 +220,14 @@ jobs:
       - add_ssh_keys:
           fingerprints: [7c:fd:fa:f2:4a:db:a4:c8:69:dc:bf:51:10:4c:c6:14]
       - attach_workspace:
-          at: /temp/ansible
+          at: .
       - run:
           name: Install dependencies
           command: apk add --update ansible
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i /tmp/ansible/inventory.txt ./.circleci/ansible/configure-server.yml
+            ansible-playbook -i ./.circleci/ansible/inventory.txt ./.circleci/ansible/configure-server.yml
       - destroy-environment     
 
   run-migrations:
