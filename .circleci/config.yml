@@ -47,6 +47,9 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build-2
+      - save_cache:
+          paths: [frontend/dist]
+          key: frontend-dist-2
       - slack/notify:
           event: fail
           mentions: '@EngineeringTeam'
@@ -72,6 +75,9 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build-2
+      - save_cache:
+          paths: [backend/dist]
+          key: backend-dist-2
       - slack/notify:
           event: fail
           mentions: '@EngineeringTeam'
@@ -266,25 +272,30 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            sudo apt-get update
+            sudo apt-get -y install awscli
       - run:
           name: Get backend url
           command: |
-            # your code here
+            BACKEND_IP = $(aws ec2 describe-instances --filters Name=tag:Name,Values=backend-* Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress --no-paginate --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+      - restore_cache:
+          keys: 
+           - frontend-build-2
       - run:
           name: Deploy frontend objects
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure      
-                    
+            aws s3 cp ./frontend/dist s3://"udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive  
+      - destroy-environment
+      - revert-migrations
+      
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
