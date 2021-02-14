@@ -114,9 +114,7 @@ jobs:
           name: audit frontend
           command: |
             cd frontend/
-            npm audit
             npm audit fix
-            npm audit --audit-level=critical
       # Checkout code from git
       # Restore from cache
       # Your job code here
@@ -133,9 +131,7 @@ jobs:
           name: audit backend
           command: |
             cd backend/
-            npm audit
             npm audit fix
-            npm audit --audit-level=critical
 
   deploy-infrastructure:
     docker:
