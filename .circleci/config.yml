@@ -5,15 +5,14 @@ orbs:
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    parameters:
-      # Add parameter here   
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            # Your code here
-            exit 1
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID}
+            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID}
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -193,11 +192,12 @@ jobs:
           command: |
             aws ec2 describe-instances --filters Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
+            yum -y install tar gzip jq npm
       - persist_to_workspace:
           root: ~/
           paths:
             - .circleci/ansible/inventory.txt
-
+      - destroy-environment
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
