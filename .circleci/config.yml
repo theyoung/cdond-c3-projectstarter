@@ -286,9 +286,11 @@ jobs:
             BACKEND_IP = $(aws ec2 describe-instances --filters Name=tag:Name,Values=backend-* Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress --no-paginate --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-      - restore_cache:
-          keys: 
-           - frontend-build-2
+      - run:
+          name: bake and run
+          command: |
+            cd frontend
+            npm run build
       - run:
           name: Deploy frontend objects
           command: |
