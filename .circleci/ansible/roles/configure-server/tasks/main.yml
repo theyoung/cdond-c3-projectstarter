@@ -18,3 +18,10 @@
     global: yes
     production: yes
     state: present
+
+- name: "Install rsync."
+  become: true
+  npm:
+    name: rsync
+    global: yes
+    state: present
