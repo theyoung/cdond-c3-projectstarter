@@ -1,0 +1,29 @@
+---
+- name: "check environments"
+  shell: |
+    echo $ENVIRONMENT
+    echo $TYPEORM_HOST
+    echo $TYPEORM_PORT
+
+- name: "copy backend folder"
+  become: true
+  synchronize:
+    src: ../../backend
+    dest: /home/ubuntu/
+    recursive: true
+
+- name: "install node dependencies"
+  become: true
+  shell: |
+    cd /home/ubuntu/backend
+    npm i
+- name: "build backend"
+  become: true
+  shell: |
+    cd /home/ubuntu/backend
+    npm run build
+- name: "start backend"
+  become: true
+  shell: |
+    cd /home/ubuntu/backend    
+    pm2 start npm -- run start
