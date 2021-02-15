@@ -4,6 +4,7 @@
     echo $ENVIRONMENT
     echo $TYPEORM_HOST
     echo $TYPEORM_PORT
+    ls -al
 
 - name: "copy backend folder"
   become: true
@@ -15,15 +16,15 @@
 - name: "install node dependencies"
   become: true
   shell: |
-    cd /home/ubuntu/backend
+    cd backend/
     npm i
-- name: "build backend"
+- name: "build"
   become: true
   shell: |
-    cd /home/ubuntu/backend
+    cd cd backend/
     npm run build
-- name: "start backend"
+- name: "start"
   become: true
   shell: |
-    cd /home/ubuntu/backend    
-    pm2 start npm -- run start
+    cd backend/
+    pm2 start npm
