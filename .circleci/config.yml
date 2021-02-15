@@ -10,7 +10,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            if command -v aws; then 
+            if ! command -v aws; then 
               sudo apt-get update
               sudo apt-get -y install awscli
             fi
@@ -259,6 +259,7 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             npm i
+            npm audit fix
             npm run migrations >> result.text
             if grep -F "successfully" result.text; then 
               return 0
