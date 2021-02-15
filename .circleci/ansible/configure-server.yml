@@ -13,11 +13,19 @@
       wait_for_connection:
         timeout: 600
 
-    - name: "install python for Ansible."
+    - name: "install python for Ansible"
       become: true
       shell: |
         if [ ! -f /usr/bin/python ]; then
             apt -y update && apt -y install python3; 
+            apt -y install rsync
+        fi
+
+    - name: "install rsync"
+      become: true
+      shell: |
+        if [ ! -f /usr/bin/rsync ]; then
+            apt -y update && apt -y install rsync; 
         fi
 
   roles:

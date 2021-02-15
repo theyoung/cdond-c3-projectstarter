@@ -1,9 +1,4 @@
 ---
-- name: "Installing Rsync"
-  apt:
-    name: rsync
-    state: latest
-
 - name: "check environments"
   shell: |
     echo $ENVIRONMENT
