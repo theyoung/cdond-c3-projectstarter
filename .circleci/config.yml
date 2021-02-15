@@ -297,7 +297,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            BACKEND_IP = $(aws ec2 describe-instances --filters Name=tag:Name,Values=backend-* Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress --no-paginate --output text)
+            BACKEND_IP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=backend-* Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress --no-paginate --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
@@ -328,6 +328,7 @@ jobs:
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
+      - checkout
       - run:
           name: Install dependencies
           command: |
