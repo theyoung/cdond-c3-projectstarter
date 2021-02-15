@@ -218,13 +218,6 @@ jobs:
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
-      - run:
-          name: install awscli
-          command: |
-            if ! command -v aws; then 
-              sudo apt-get update
-              sudo apt-get -y install awscli
-            fi
       - checkout
       - add_ssh_keys:
           fingerprints: [7c:fd:fa:f2:4a:db:a4:c8:69:dc:bf:51:10:4c:c6:14]
@@ -232,7 +225,9 @@ jobs:
           at: .
       - run:
           name: Install dependencies
-          command: apk add --update ansible
+          command: |
+            apk add --update ansible
+            pip install awscli
       - run:
           name: Configure server
           command: |
@@ -248,10 +243,8 @@ jobs:
       - run:
           name: install awscli
           command: |
-            if ! command -v aws; then 
-              sudo apt-get update
-              sudo apt-get -y install awscli
-            fi
+            sudo apt-get update
+            sudo apt-get -y install awscli
       - checkout
       - run:
           name: Run migrations
