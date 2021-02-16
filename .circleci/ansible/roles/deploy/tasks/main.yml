@@ -2,7 +2,7 @@
 - name: "copy backend folder"
   become: true
   copy:
-    src: ~/backend.tar
+    src: /root/project/backend.tar
     dest: /home/ubuntu/
 
 - name: "un tar"
