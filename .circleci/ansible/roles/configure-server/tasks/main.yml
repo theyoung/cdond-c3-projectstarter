@@ -21,7 +21,6 @@
 
 - name: "Install rsync."
   become: true
-  npm:
+  apt:
     name: rsync
-    global: yes
     state: present

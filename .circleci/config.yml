@@ -261,9 +261,7 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             npm i
-            npm audit fix
             npm run migrations >> result.text
-            cat result.text
       - run:
           name: Send migration results to memstash
           command: |
@@ -330,6 +328,20 @@ jobs:
       # attach workspace
       - checkout
       - run:
+          name: Run migrations
+          command: |
+            cd backend/
+            echo ENVIROMENT=$ENVIROMENT > ".env"
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ".env"
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> ".env"
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> ".env"
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> ".env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
+      - run:
           name: Install dependencies
           command: |
             apk add --update ansible
@@ -338,6 +350,10 @@ jobs:
           fingerprints: [7c:fd:fa:f2:4a:db:a4:c8:69:dc:bf:51:10:4c:c6:14]
       - attach_workspace:
           at: .
+      - run:
+          name: "tar archiv"
+          command: |
+            tar -cvf backend.tar backend/
       - run:
           name: Deploy backend
           command: |
