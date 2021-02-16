@@ -12,7 +12,7 @@ commands:
           command: |
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws s3 rb s3://udapeople-$OLD_WORKFLOW_ID:0:7} --force
+            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow. 
@@ -360,7 +360,7 @@ jobs:
           name: Deploy backend
           command: |
             cat ./.circleci/ansible/inventory.txt
-            ansible-playbook -i ./.circleci/ansible/inventory.txt ./.circleci/ansible/deploy-backend.yml
+            ansible-playbook -i ./.circleci/ansible/inventory.txt ./.circleci/ansible/deploy-backend.yml -vvv
       - destroy-environment
 
   smoke-test:
