@@ -292,9 +292,9 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            sudo yum -y install tar gzip jq npm
-            sudo amazon-linux-extras install epel -y
-            sudo yum -y install nodejs
+            yum -y install tar gzip jq npm
+            amazon-linux-extras install epel -y
+            yum -y install nodejs
       - run:
           name: Add back-end ip to ansible inventory
           command: |
