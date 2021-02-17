@@ -431,7 +431,7 @@ workflows:
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - deploy-frontend:
-          requires: [build-frontend]
+          requires: [configure-infrastructure]
       # - build-frontend
       # - build-backend
       # - test-frontend:
