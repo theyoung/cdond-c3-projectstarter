@@ -283,22 +283,23 @@ jobs:
       - destroy-environment
       - revert-migrations
 
+
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
-          name: Install dependencies
+          name: install dependencies
           command: |
-            sudo apt-get update
-            sudo apt-get -y install awscli
+            sudo yum -y install tar gzip jq npm
+            sudo amazon-linux-extras install epel -y
+            sudo yum -y install nodejs
       - run:
-          name: Get backend url
+          name: Add back-end ip to ansible inventory
           command: |
-            BACKEND_IP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=backend-* Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress --no-paginate --output text)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
+            aws ec2 describe-instances --filters Name=tag:Name,Values=backend-* Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress --no-paginate --output text >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
       - run:
           name: bake and run
           command: |
@@ -309,8 +310,35 @@ jobs:
           name: Deploy frontend objects
           command: |
             aws s3 sync ./frontend/dist s3://"udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --debug
-      - destroy-environment
-      - revert-migrations
+
+  # deploy-frontend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           sudo apt-get update
+  #           sudo apt-get -y install awscli
+  #     - run:
+  #         name: Get backend url
+  #         command: |
+  #           BACKEND_IP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=backend-* Name=instance-state-name,Values=running --query Reservations[*].Instances[*].PublicIpAddress --no-paginate --output text)
+  #           export API_URL="http://${BACKEND_IP}:3030"
+  #           echo "${API_URL}"
+  #     - run:
+  #         name: bake and run
+  #         command: |
+  #           cd frontend
+  #           npm i
+  #           npm run build
+  #     - run:
+  #         name: Deploy frontend objects
+  #         command: |
+  #           aws s3 sync ./frontend/dist s3://"udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --debug
+  #     - destroy-environment
+  #     - revert-migrations
       
   deploy-backend:
     docker:
