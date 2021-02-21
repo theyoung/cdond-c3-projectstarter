@@ -19,7 +19,7 @@
       TYPEORM_ENTITIES: "{{ lookup('env','TYPEORM_ENTITIES') }}"
 
 - name: check environments
-  command: echo $TYPEORM_CONNECTION
+  shell: echo $TYPEORM_CONNECTION
 
 - name: Basic usage
   debug:
