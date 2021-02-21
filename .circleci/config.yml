@@ -263,6 +263,7 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             npm i
             npm run migrations >> result.text
+            cat result.text
       - run:
           name: Send migration results to memstash
           command: |
