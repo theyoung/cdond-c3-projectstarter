@@ -331,6 +331,15 @@ jobs:
       # Add ssh keys with fingerprint
       # attach workspace
       - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            pip install awscli
+      - add_ssh_keys:
+          fingerprints: [7c:fd:fa:f2:4a:db:a4:c8:69:dc:bf:51:10:4c:c6:14]
       - run:
           name: Run migrations
           command: |
@@ -345,15 +354,6 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
-            pip install awscli
-      - add_ssh_keys:
-          fingerprints: [7c:fd:fa:f2:4a:db:a4:c8:69:dc:bf:51:10:4c:c6:14]
-      - attach_workspace:
-          at: .
       - run:
           name: "tar archiv"
           command: |
