@@ -1,4 +1,17 @@
 ---
+- name: check environments
+  shell: echo $TYPEORM_CONNECTION
+
+- name: Basic usage
+  debug:
+    msg: "'{{ lookup('env', 'TYPEORM_CONNECTION') }}' is the TYPEORM_CONNECTION environment variable."
+- name: Basic usage
+  debug:
+    msg: "'{{ lookup('env', 'TYPEORM_PORT') }}' is the TYPEORM_PORT environment variable."
+- name: Basic usage
+  debug:
+    msg: "'{{ lookup('env', 'TYPEORM_HOST') }}' is the TYPEORM_HOST environment variable. "
+    
 - name: "copy backend folder"
   become: true
   copy:
