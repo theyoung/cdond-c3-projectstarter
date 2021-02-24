@@ -38,3 +38,4 @@
 
   roles:
     - configure-server #PM2, nodejs install
+    - configure-prometheus-node-exporter
